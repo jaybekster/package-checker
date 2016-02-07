@@ -1,11 +1,14 @@
 {
   "name": "package-checker",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Library to compare currently installed versions of packages with package.json file",
   "main": "index.js",
   "scripts": {
     "watch": "webpack -w",
     "build": "webpack"
+  },
+  "bin": {
+    "package-checker": "./bin/package-checker/"
   },
   "repository": {
     "type": "git",
