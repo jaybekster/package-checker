@@ -1,0 +1,26 @@
+{
+  "name": "package-checker",
+  "version": "0.1.0",
+  "description": "Library to compare currently installed versions of packages with package.json file",
+  "main": "index.js",
+  "scripts": {
+    "watch": "webpack -w",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaybekster/package-checker.git"
+  },
+  "author": "Mikhail Tsyplakov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jaybekster/package-checker/issues"
+  },
+  "homepage": "https://github.com/jaybekster/package-checker#readme",
+  "dependencies": {
+    "chalk": "^1.1.1",
+    "cli-spinner": "^0.2.4",
+    "semver": "^5.1.0"
+  },
+  "devDependencies": {}
+}
