@@ -1,0 +1,74 @@
+#!/usr/bin/env node
+'use strict';
+
+var packageChecker = require('../index'),
+	chalk = require('chalk'),
+	settings = {},
+	args = process.argv.slice(2),
+	arg;
+
+while (args.length) {
+	arg = args.shift();
+	switch (arg) {
+		case '--dev':
+		case '-d':
+			settings.dev = args.shift();
+			if (settings.dev !== 'true' && settings.dev !== 'false') {
+				throw new Error('--dev <boolean> required');
+			}
+			break;
+		case '--prod':
+		case '-p':
+			settings.prod = args.shift();
+			if (settings.prod !== 'true' && settings.prod !== 'false') {
+				throw new Error('--prod <boolean> required');
+			}
+			break;
+		case '--directory':
+		case '-D':
+			settings.directory = args.shift();
+			if (!settings.directory) {
+				throw new Error('--directory <path> required');
+			}
+			break;
+		case '--path':
+		case '-P':
+			settings.path = args.shift();
+			if (!settings.directory) {
+				throw new Error('--path <path> required');
+			}
+			break;
+		default:
+			break;
+	}
+}
+
+packageChecker(settings, function(err, stats) {
+	if (err) {
+		console.log(err);
+		return;
+	}
+	if (stats) {
+		for (var packageName in stats) {
+			switch (stats[packageName].error) {
+				case 'is missing':
+					console.log(
+	                    chalk.bold(packageName + '@' + stats[packageName].actualVersion) +
+	                    chalk.red(' is missing')
+	                );
+					break;
+				case 'invalid version':
+					console.log(
+	                    chalk.bold(packageName) +
+	                    ' is ' +
+	                    chalk.red(stats[packageName].relevantVersion) +
+	                    ' instead of ' +
+	                    chalk.green(stats[packageName].actualVersion)
+	                );
+					break;
+				default:
+					break;
+			}
+		}
+	}
+});
