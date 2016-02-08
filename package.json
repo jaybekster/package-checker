@@ -1,6 +1,6 @@
 {
   "name": "package-checker",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Library to compare currently installed versions of packages with package.json file",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,16 @@
     "type": "git",
     "url": "git+https://github.com/jaybekster/package-checker.git"
   },
-  "author": "Mikhail Tsyplakov",
+  "author": {
+    "name": "Mikhail Tsyplakov"
+  },
+  "keywords": [
+    "npm",
+    "dependencies",
+    "check",
+    "package.json",
+    "version"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/jaybekster/package-checker/issues"
