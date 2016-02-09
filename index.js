@@ -56,10 +56,6 @@ function checkDeps(options) {
             }
         }
         return output;
-    }, function(err) {
-        console.log(err);
-    }).catch(function(err) {
-        console.log(err);
     });
 }
 
