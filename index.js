@@ -13,6 +13,9 @@ const SETTINGS = {
     dev: true
 };
 
+
+const gitHubPublicRe = /^https:\/\/github.com\/([^\/])+\/([^\/]+\.git)#([0-9]+\.[0-9]+\.[0-9]+)$/;
+
 /**
  * checkDeps check fiddeferecies between version from npm ls command and package.json
  * @param  {Object} options
@@ -32,7 +35,9 @@ function checkDeps(options) {
         var packageName,
             output = {},
             currentPackages = values[1],
-            actualPackages = values[0];
+            actualPackages = values[0],
+            packageVersion,
+            packageJsonVersion;
 
         spinner.stop();
         process.stdout.write('\n');
@@ -45,14 +50,20 @@ function checkDeps(options) {
                 continue;
             }
 
-            if (actualPackages[packageName]
-                && semver.validRange(actualPackages[packageName])
-                && currentPackages[packageName].version !== actualPackages[packageName]
-                && !semver.satisfies(currentPackages[packageName].version, actualPackages[packageName])
+            packageJsonVersion = actualPackages[packageName];
+            packageVersion = currentPackages[packageName].version;
+
+            if (gitHubPublicRe.test(packageJsonVersion)) { // if public githib url
+                packageJsonVersion = packageJsonVersion.match(gitHubPublicRe)[3];
+            }
+
+            if (semver.validRange(packageJsonVersion)
+                && packageVersion !== packageJsonVersion
+                && !semver.satisfies(packageVersion, packageJsonVersion)
             ) {
                 output[packageName].error = 'invalid version';
-                output[packageName].actualVersion = actualPackages[packageName];
-                output[packageName].relevantVersion = currentPackages[packageName].version;
+                output[packageName].actualVersion = packageJsonVersion;
+                output[packageName].relevantVersion = packageVersion;
             }
         }
         return output;

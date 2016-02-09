@@ -43,11 +43,7 @@ while (args.length) {
 	}
 }
 
-packageChecker(settings, function(err, stats) {
-	if (err) {
-		console.log(err);
-		return;
-	}
+packageChecker(settings, function(stats) {
 	if (stats) {
 		for (var packageName in stats) {
 			switch (stats[packageName].error) {
@@ -71,4 +67,6 @@ packageChecker(settings, function(err, stats) {
 			}
 		}
 	}
+}).catch(function(err) {
+	console.log(err);
 });
