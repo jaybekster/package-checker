@@ -70,9 +70,7 @@ function runCheckDeps(config, callback) {
         callback = typeof config === 'object' ? callback : config;
 
     return checkDeps(config || {}).then(function(output) {
-        callback(error, output)
-    }).catch(function(error) {
-        callback(error, null);
+        callback(output)
     });
 }
 
