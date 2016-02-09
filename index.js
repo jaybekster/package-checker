@@ -46,6 +46,7 @@ function checkDeps(options) {
             }
 
             if (actualPackages[packageName]
+                && semver.validRange(actualPackages[packageName])
                 && currentPackages[packageName].version !== actualPackages[packageName]
                 && !semver.satisfies(currentPackages[packageName].version, actualPackages[packageName])
             ) {
