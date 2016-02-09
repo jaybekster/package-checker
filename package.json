@@ -1,6 +1,6 @@
 {
   "name": "package-checker",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Library to compare currently installed versions of packages with package.json file",
   "main": "index.js",
   "scripts": {
@@ -22,5 +22,6 @@
     "cli-spinner": "^0.2.4",
     "semver": "^5.1.0"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "readme": "README.md"
 }
