@@ -49,17 +49,20 @@ spinner.setSpinnerString('|/-\\');
 spinner.start();
 
 packageChecker(settings, function(stats) {
-	spinner.stop();
+	var errorCounter = 0;
+
 	if (stats) {
 		for (var packageName in stats) {
 			switch (stats[packageName].error) {
 				case 'is missing':
+					errorCounter += 1;
 					console.log(
 	                    chalk.bold(packageName + '@' + stats[packageName].actualVersion) +
 	                    chalk.red(' is missing')
 	                );
 					break;
 				case 'invalid version':
+					errorCounter += 1;
 					console.log(
 	                    chalk.bold(packageName) +
 	                    ' is ' +
@@ -73,7 +76,10 @@ packageChecker(settings, function(stats) {
 			}
 		}
 	}
+
+	if (!errorCounter) {
+		console.log(chalk.green('No differences were found'));
+	}
 }).catch(function(err) {
-	spinner.stop();
 	console.log(err);
 });

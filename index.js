@@ -33,8 +33,6 @@ function checkDeps(options) {
             packageVersion,
             packageJsonVersion;
 
-        process.stdout.write('\n');
-
         for (packageName in actualPackages) {
             output[packageName] = {};
             output[packageName].actualVersion = actualPackages[packageName];
