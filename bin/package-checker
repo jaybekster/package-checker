@@ -51,6 +51,8 @@ spinner.start();
 packageChecker(settings, function(stats) {
 	var errorCounter = 0;
 
+	spinner.stop(true);
+
 	if (stats) {
 		for (var packageName in stats) {
 			switch (stats[packageName].error) {
@@ -81,5 +83,6 @@ packageChecker(settings, function(stats) {
 		console.log(chalk.green('No differences were found'));
 	}
 }).catch(function(err) {
+	spinner.stop(true);
 	console.log(err);
 });
