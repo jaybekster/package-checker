@@ -2,7 +2,6 @@
 
 var semver = require('semver'),
     prcoess = require('process'),
-    Spinner = require('cli-spinner').Spinner,
     readPackageJson = require('./lib/read-package-json'),
     getCurrentNpmLs = require('./lib/get-current-npm-ls');
 
@@ -13,7 +12,6 @@ const SETTINGS = {
     dev: true
 };
 
-
 const gitHubPublicRe = /^https:\/\/github.com\/([^\/])+\/([^\/]+\.git)#([0-9]+\.[0-9]+\.[0-9]+)$/;
 
 /**
@@ -22,11 +20,7 @@ const gitHubPublicRe = /^https:\/\/github.com\/([^\/])+\/([^\/]+\.git)#([0-9]+\.
  * @return {undefined}
  */
 function checkDeps(options) {
-    var spinner = new Spinner('%s'),
-        options = Object.assign(SETTINGS, options);
-
-    spinner.setSpinnerString('|/-\\');
-    spinner.start();
+    var options = Object.assign(SETTINGS, options);
 
     return Promise.all([
         readPackageJson(options),
@@ -39,7 +33,6 @@ function checkDeps(options) {
             packageVersion,
             packageJsonVersion;
 
-        spinner.stop();
         process.stdout.write('\n');
 
         for (packageName in actualPackages) {

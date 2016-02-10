@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 'use strict';
 
-var packageChecker = require('../index'),
+var Spinner = require('cli-spinner').Spinner,
+	packageChecker = require('../index'),
 	chalk = require('chalk'),
 	settings = {},
 	args = process.argv.slice(2),
@@ -43,7 +44,12 @@ while (args.length) {
 	}
 }
 
+var spinner = new Spinner('%s');
+spinner.setSpinnerString('|/-\\');
+spinner.start();
+
 packageChecker(settings, function(stats) {
+	spinner.stop();
 	if (stats) {
 		for (var packageName in stats) {
 			switch (stats[packageName].error) {
@@ -68,5 +74,6 @@ packageChecker(settings, function(stats) {
 		}
 	}
 }).catch(function(err) {
+	spinner.stop();
 	console.log(err);
 });
