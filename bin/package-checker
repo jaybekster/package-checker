@@ -2,46 +2,46 @@
 'use strict';
 
 var Spinner = require('cli-spinner').Spinner,
-	packageChecker = require('../index'),
-	chalk = require('chalk'),
-	settings = {},
-	args = process.argv.slice(2),
-	arg;
+    packageChecker = require('../index'),
+    chalk = require('chalk'),
+    settings = {},
+    args = process.argv.slice(2),
+    arg;
 
 while (args.length) {
-	arg = args.shift();
-	switch (arg) {
-		case '--dev':
-		case '-d':
-			settings.dev = args.shift();
-			if (settings.dev !== 'true' && settings.dev !== 'false') {
-				throw new Error('--dev <boolean> required');
-			}
-			break;
-		case '--prod':
-		case '-p':
-			settings.prod = args.shift();
-			if (settings.prod !== 'true' && settings.prod !== 'false') {
-				throw new Error('--prod <boolean> required');
-			}
-			break;
-		case '--directory':
-		case '-D':
-			settings.directory = args.shift();
-			if (!settings.directory) {
-				throw new Error('--directory <path> required');
-			}
-			break;
-		case '--path':
-		case '-P':
-			settings.path = args.shift();
-			if (!settings.directory) {
-				throw new Error('--path <path> required');
-			}
-			break;
-		default:
-			break;
-	}
+    arg = args.shift();
+    switch (arg) {
+        case '--dev':
+        case '-d':
+            settings.dev = args.shift();
+            if (settings.dev !== 'true' && settings.dev !== 'false') {
+                throw new Error('--dev <boolean> required');
+            }
+            break;
+        case '--prod':
+        case '-p':
+            settings.prod = args.shift();
+            if (settings.prod !== 'true' && settings.prod !== 'false') {
+                throw new Error('--prod <boolean> required');
+            }
+            break;
+        case '--directory':
+        case '-D':
+            settings.directory = args.shift();
+            if (!settings.directory) {
+                throw new Error('--directory <path> required');
+            }
+            break;
+        case '--path':
+        case '-P':
+            settings.path = args.shift();
+            if (!settings.directory) {
+                throw new Error('--path <path> required');
+            }
+            break;
+        default:
+            break;
+    }
 }
 
 var spinner = new Spinner('%s');
@@ -49,40 +49,40 @@ spinner.setSpinnerString('|/-\\');
 spinner.start();
 
 packageChecker(settings, function(stats) {
-	var errorCounter = 0;
+    var errorCounter = 0;
 
-	spinner.stop(true);
+    spinner.stop(true);
 
-	if (stats) {
-		for (var packageName in stats) {
-			switch (stats[packageName].error) {
-				case 'is missing':
-					errorCounter += 1;
-					console.log(
-	                    chalk.bold(packageName + '@' + stats[packageName].actualVersion) +
-	                    chalk.red(' is missing')
-	                );
-					break;
-				case 'invalid version':
-					errorCounter += 1;
-					console.log(
-	                    chalk.bold(packageName) +
-	                    ' is ' +
-	                    chalk.red(stats[packageName].relevantVersion) +
-	                    ' instead of ' +
-	                    chalk.green(stats[packageName].actualVersion)
-	                );
-					break;
-				default:
-					break;
-			}
-		}
-	}
+    if (stats) {
+        for (var packageName in stats) {
+            switch (stats[packageName].error) {
+                case 'is missing':
+                    errorCounter += 1;
+                    console.log(
+                        chalk.bold(packageName + '@' + stats[packageName].actualVersion) +
+                        chalk.red(' is missing')
+                    );
+                    break;
+                case 'invalid version':
+                    errorCounter += 1;
+                    console.log(
+                        chalk.bold(packageName) +
+                        ' is ' +
+                        chalk.red(stats[packageName].relevantVersion) +
+                        ' instead of ' +
+                        chalk.green(stats[packageName].actualVersion)
+                    );
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 
-	if (!errorCounter) {
-		console.log(chalk.green('No differences were found'));
-	}
+    if (!errorCounter) {
+        console.log(chalk.green('No differences were found'));
+    }
 }).catch(function(err) {
-	spinner.stop(true);
-	console.log(err);
+    spinner.stop(true);
+    console.log(chalk.red(err));
 });
