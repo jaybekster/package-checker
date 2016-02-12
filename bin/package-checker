@@ -82,7 +82,7 @@ packageChecker(settings, function(stats) {
     if (!errorCounter) {
         console.log(chalk.green('No differences were found'));
     }
-}).catch(function(err) {
+}).catch(function(error) {
     spinner.stop(true);
-    console.log(chalk.red(err));
+    console.log(chalk.red(error));
 });
