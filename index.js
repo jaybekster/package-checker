@@ -1,7 +1,6 @@
-'use strict';
-
 var semver = require('semver'),
     prcoess = require('process'),
+    version = require('./package.json').version,
     readPackageJson = require('./lib/read-package-json'),
     getCurrentNpmLs = require('./lib/get-current-npm-ls');
 
@@ -76,4 +75,7 @@ function runCheckDeps(config, callback) {
     });
 }
 
+runCheckDeps.version = version;
+
 module.exports = runCheckDeps;
+
