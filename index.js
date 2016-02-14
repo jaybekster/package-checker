@@ -44,7 +44,7 @@ function checkDeps(options) {
             packageJsonVersion = actualPackages[packageName];
             packageVersion = currentPackages[packageName].version;
 
-            if (gitHubPublicRe.test(packageJsonVersion)) { // if public githib url
+            if (gitHubPublicRe.test(packageJsonVersion)) { // if public github url
                 packageJsonVersion = packageJsonVersion.match(gitHubPublicRe)[3];
             }
 
@@ -72,7 +72,7 @@ function runCheckDeps(config, callback) {
         callback = typeof config === 'object' ? callback : config;
 
     return checkDeps(config || {}).then(function(output) {
-        callback(output)
+        callback(output);
     });
 }
 
