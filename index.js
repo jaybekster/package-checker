@@ -1,3 +1,5 @@
+'use strict';
+
 var semver = require('semver'),
     prcoess = require('process'),
     version = require('./package.json').version,
@@ -18,8 +20,10 @@ const gitHubPublicRe = /^https:\/\/github.com\/([^\/])+\/([^\/]+\.git)#([0-9]+\.
  * @param  {Object} options
  * @return {undefined}
  */
-function checkDeps(options) {
-    var options = Object.assign(SETTINGS, options);
+function packageChecker(options, callback) {
+    var callback = (typeof options === 'object' ? callback : options) || function() {},
+        options = Object.assign(SETTINGS, (typeof options === 'object' ? options : callback) || {}),
+        error = null;
 
     return Promise.all([
         readPackageJson(options),
@@ -35,6 +39,7 @@ function checkDeps(options) {
         for (packageName in actualPackages) {
             output[packageName] = {};
             output[packageName].actualVersion = actualPackages[packageName];
+
             if (!currentPackages[packageName] || currentPackages[packageName].missing) {
                 output[packageName].error = 'is missing';
                 continue;
@@ -56,26 +61,13 @@ function checkDeps(options) {
                 output[packageName].relevantVersion = packageVersion;
             }
         }
-        return output;
+
+        callback(null, output);
+    }).catch(function(error) {
+        callback(error);
     });
 }
 
-/**
- * runCheckDeps
- * @param  {Object}   config
- * @param  {Function} callback
- * @return {Promise}
- */
-function runCheckDeps(config, callback) {
-    var error = null,
-        callback = typeof config === 'object' ? callback : config;
+packageChecker.version = version;
 
-    return checkDeps(config || {}).then(function(output) {
-        callback(output);
-    });
-}
-
-runCheckDeps.version = version;
-
-module.exports = runCheckDeps;
-
+module.exports = packageChecker;
