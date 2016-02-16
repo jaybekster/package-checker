@@ -72,10 +72,15 @@ var spinner = new Spinner('%s');
 spinner.setSpinnerString('|/-\\');
 spinner.start();
 
-packageChecker(settings, function(stats) {
+packageChecker(settings, function(error, stats) {
     var errorCounter = 0;
 
     spinner.stop(true);
+
+    if (error) {
+        console.log(chalk.red(error));
+        return;
+    }
 
     if (stats) {
         for (var packageName in stats) {
@@ -106,7 +111,4 @@ packageChecker(settings, function(stats) {
     if (!errorCounter) {
         console.log(chalk.green('No differences were found'));
     }
-}).catch(function(error) {
-    spinner.stop(true);
-    console.log(chalk.red(error));
 });
