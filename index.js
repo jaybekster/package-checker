@@ -63,7 +63,7 @@ function packageChecker(options, callback) {
         }
 
         callback(null, output);
-    }}, function(error) {
+    }, function(error) {
         callback(error, null);
     });
 }
