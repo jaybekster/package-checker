@@ -63,8 +63,8 @@ function packageChecker(options, callback) {
         }
 
         callback(null, output);
-    }).catch(function(error) {
-        callback(error);
+    }}, function(error) {
+        callback(error, null);
     });
 }
 
