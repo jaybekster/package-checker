@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-var Spinner = require('cli-spinner').Spinner,
-    packageChecker = require('../index'),
-    chalk = require('chalk'),
+var packageChecker = require('../index'),
     settings = {},
     args = process.argv.slice(2),
     help = [
