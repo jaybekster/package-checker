@@ -34,14 +34,14 @@ const gitHubPublicRe = /^https:\/\/github.com\/([^\/])+\/([^\/]+\.git)#([0-9]+\.
 function packageChecker(options, callback) {
     var callback = (typeof options === 'object' ? callback : options) || function() {},
         options = Object.assign(SETTINGS, (typeof options === 'object' ? options : callback) || {}),
-        error = null;
+        error = null,
+        output = {};
 
     return Promise.all([
         readPackageJson(options),
         getCurrentNpmLs(options)
     ]).then(function(values) {
         var packageName,
-            output = {},
             currentPackages = values[1],
             actualPackages = values[0],
             packageVersion,
@@ -79,12 +79,12 @@ function packageChecker(options, callback) {
             );
             throw new Error('Differences were found');
         } else {
+            callback(null, output);
             console.log(chalk.green('No differences were found'));
         }
-        callback(null, output);
     }).catch(function(error) {
         console.log(chalk.red(error));
-        callback(error, null);
+        callback(error, output);
     });
 }
 
