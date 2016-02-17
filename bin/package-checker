@@ -68,47 +68,4 @@ while (args.length) {
     }
 }
 
-var spinner = new Spinner('%s');
-spinner.setSpinnerString('|/-\\');
-spinner.start();
-
-packageChecker(settings, function(error, stats) {
-    var errorCounter = 0;
-
-    spinner.stop(true);
-
-    if (error) {
-        console.log(chalk.red(error));
-        return;
-    }
-
-    if (stats) {
-        for (var packageName in stats) {
-            switch (stats[packageName].error) {
-                case 'is missing':
-                    errorCounter += 1;
-                    console.log(
-                        chalk.bold(packageName + '@' + stats[packageName].actualVersion) +
-                        chalk.red(' is missing')
-                    );
-                    break;
-                case 'invalid version':
-                    errorCounter += 1;
-                    console.log(
-                        chalk.bold(packageName) +
-                        ' is ' +
-                        chalk.red(stats[packageName].relevantVersion) +
-                        ' instead of ' +
-                        chalk.green(stats[packageName].actualVersion)
-                    );
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    if (!errorCounter) {
-        console.log(chalk.green('No differences were found'));
-    }
-});
+packageChecker(settings);
