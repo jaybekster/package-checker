@@ -37,6 +37,10 @@ function packageChecker(options, callback) {
         error = null,
         output = {};
 
+    if (typeof callback !== "function") {
+        throw new Error("Invalid argument: callback");
+    }
+
     return Promise.all([
         readPackageJson(options),
         getCurrentNpmLs(options)
@@ -79,8 +83,8 @@ function packageChecker(options, callback) {
             );
             throw new Error('Differences were found');
         } else {
-            callback(null, output);
             console.log(chalk.green('No differences were found'));
+            callback(null, output);
         }
     }).catch(function(error) {
         console.log(chalk.red(error));
