@@ -1,14 +1,15 @@
 'use strict';
 
 var semver = require('semver'),
-    prcoess = require('process'),
+    process = require('process'),
+    objectAssign = require('object-assign'),
     textTable = require('text-table'),
     chalk = require('chalk'),
     version = require('./package.json').version,
     readPackageJson = require('./lib/read-package-json'),
     getCurrentNpmLs = require('./lib/get-current-npm-ls');
 
-const textTableObj = {
+var textTableObj = {
     header: [
         ['Name', 'Current', 'Wanted', 'Problem']
     ],
@@ -17,14 +18,14 @@ const textTableObj = {
     }
 };
 
-const SETTINGS = {
+var SETTINGS = {
     path: process.cwd() + '/package.json',
     directory: process.cwd(),
     prod: true,
     dev: true
 };
 
-const gitHubPublicRe = /^https:\/\/github.com\/([^\/])+\/([^\/]+\.git)#([0-9]+\.[0-9]+\.[0-9]+)$/;
+var gitHubPublicRe = /^https:\/\/github.com\/([^\/])+\/([^\/]+\.git)#([0-9]+\.[0-9]+\.[0-9]+)$/;
 
 /**
  * checkDeps check fiddeferecies between version from npm ls command and package.json
@@ -33,7 +34,7 @@ const gitHubPublicRe = /^https:\/\/github.com\/([^\/])+\/([^\/]+\.git)#([0-9]+\.
  */
 function packageChecker(options, callback) {
     var callback = (typeof options === 'object' ? callback : options) || function() {},
-        options = Object.assign(SETTINGS, (typeof options === 'object' ? options : callback) || {}),
+        options = objectAssign(SETTINGS, (typeof options === 'object' ? options : callback) || {}),
         error = null,
         output = {};
 
