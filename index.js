@@ -1,7 +1,6 @@
 'use strict';
 
 var semver = require('semver'),
-    process = require('process'),
     objectAssign = require('object-assign'),
     textTable = require('text-table'),
     chalk = require('chalk'),
