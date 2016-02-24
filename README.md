@@ -2,10 +2,10 @@
 A simple plugin to compare currently installed packages with list in package.json file.
 ## Installation
 project:
-`npm install package-checker -g`
+`npm install package-checker --save-dev`
 
 global:
-`npm install package-checker --save-dev`
+`npm install package-checker -g`
 ## Usage
 project:
 ```js
