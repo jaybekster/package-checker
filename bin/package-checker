@@ -14,7 +14,7 @@ var packageChecker = require('../index'),
         '  -p, --prod              Check dependencies',
         '  -D, --directory <dir>   Path to directory having node_modules directory',
         '  -P, --path <file>       Path to package.json file',
-        '  -V, --version           Display the version of package-checker',
+        '  -v, --version           Display the version of package-checker',
         '  -h, --help              Display help information',
         ''
     ].join('\n'),
