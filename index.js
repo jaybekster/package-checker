@@ -27,7 +27,7 @@ var SETTINGS = {
 var gitHubPublicRe = /^https:\/\/github.com\/([^\/])+\/([^\/]+\.git)#([0-9]+\.[0-9]+\.[0-9]+)$/;
 
 /**
- * checkDeps check fiddeferecies between version from npm ls command and package.json
+ * checkDeps check differences between version from npm ls command and package.json
  * @param  {Object} options
  * @return {undefined}
  */
