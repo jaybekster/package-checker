@@ -20,21 +20,25 @@ global:
 #### options
 ##### -d, --dev
 Type: `boolean`
+
 Default: `true`
 
 Check `dependencies` from `package.json` file
 ##### -p, --prod
 Type: `boolean`
+
 Default: `true`
 
 Check `devDependencies` from `package.json` file
 ##### -D, --directory
 Type: `string`
+
 Default: `process.cwd()`
 
 Path to directory having `node_modules` directory
 ##### -P, --path
 Type: `string`
+
 Default: `process.cwd() + '/package.json'`
 
 Path to `package.json` file
@@ -54,4 +58,5 @@ The same as `--prod` for CLI tool
 The same as `--dev` for CLI tool
 ### callback
 Type: `function`
+
 Arguments: `error`, `output`
