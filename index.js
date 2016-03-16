@@ -5,6 +5,7 @@ var semver = require('semver'),
     textTable = require('text-table'),
     chalk = require('chalk'),
     version = require('./package.json').version,
+    cacheToFile = require('./lib/cache-to-file.js'),
     readPackageJson = require('./lib/read-package-json'),
     getCurrentNpmLs = require('./lib/get-current-npm-ls');
 
@@ -21,13 +22,27 @@ var SETTINGS = {
     path: process.cwd() + '/package.json',
     directory: process.cwd(),
     prod: true,
-    dev: true
+    dev: true,
+    cache: {
+        path: process.cwd() + '/package.json',
+        filename: __dirname + '/hashsum'
+    }
 };
 
 var gitHubPublicRe = /^https:\/\/github.com\/([^\/])+\/([^\/]+\.git)#([0-9]+\.[0-9]+\.[0-9]+)$/;
 
+function checkPackages() {
+
+}
+
+function checkHashSum(options) {
+    cacheToFile(options.cache.path, options.cache.filename).then(function(hashsum) {
+        console.log(hashsum)
+    })
+}
+
 /**
- * checkDeps check differences between version from npm ls command and package.json
+ * packageChecker check differences between version from npm ls command and package.json
  * @param  {Object} options
  * @return {undefined}
  */
@@ -41,9 +56,15 @@ function packageChecker(options, callback) {
         throw new Error("Invalid argument: callback");
     }
 
+    if (options.cache) {
+        cacheToFile(options.cache.path, options.cache.filename).then(function(hashsum) {
+            console.log(hashsum)
+        })
+    }
+
     return Promise.all([
         readPackageJson(options),
-        getCurrentNpmLs(options)
+        getCurrentNpmLs(options),
     ]).then(function(values) {
         var packageName,
             currentPackages = values[1],
