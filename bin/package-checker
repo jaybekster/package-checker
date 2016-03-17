@@ -16,7 +16,7 @@ var packageChecker = require('../index'),
         '  -P, --path <file>       Path to package.json file',
         '  -v, --version           Display the version of package-checker',
         '  -h, --help              Display help information',
-        '  --hash                   Path to file where hashsum of package.json must be saved',
+        '  --hash                  Path to file where hashsum of package.json must be saved',
         ''
     ].join('\n'),
     arg;

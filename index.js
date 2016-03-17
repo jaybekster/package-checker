@@ -23,7 +23,7 @@ var SETTINGS = {
     directory: process.cwd(),
     prod: true,
     dev: true,
-    hashFile: process.cwd() + '/hashsum'
+    hashFile: false
 };
 
 var gitHubPublicRe = /^https:\/\/github.com\/([^\/])+\/([^\/]+\.git)#([0-9]+\.[0-9]+\.[0-9]+)$/;
