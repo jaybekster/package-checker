@@ -23,44 +23,19 @@ var SETTINGS = {
     directory: process.cwd(),
     prod: true,
     dev: true,
-    cache: {
-        path: process.cwd() + '/package.json',
-        filename: __dirname + '/hashsum'
-    }
+    sumFile: false
 };
 
 var gitHubPublicRe = /^https:\/\/github.com\/([^\/])+\/([^\/]+\.git)#([0-9]+\.[0-9]+\.[0-9]+)$/;
 
-function checkPackages() {
-
-}
-
-function checkHashSum(options) {
-    cacheToFile(options.cache.path, options.cache.filename).then(function(hashsum) {
-        console.log(hashsum)
-    })
-}
-
 /**
- * packageChecker check differences between version from npm ls command and package.json
+ * comparePackages compare data from <npm -ls> command and <package.json>
  * @param  {Object} options
- * @return {undefined}
+ * @param  {Function} callback
+ * @return {Promise}
  */
-function packageChecker(options, callback) {
-    var callback = (typeof options === 'object' ? callback : options) || function() {},
-        options = objectAssign(SETTINGS, (typeof options === 'object' ? options : callback) || {}),
-        error = null,
-        output = {};
-
-    if (typeof callback !== "function") {
-        throw new Error("Invalid argument: callback");
-    }
-
-    if (options.cache) {
-        cacheToFile(options.cache.path, options.cache.filename).then(function(hashsum) {
-            console.log(hashsum)
-        })
-    }
+function comparePackages(options, callback) {
+    var output = {};
 
     return Promise.all([
         readPackageJson(options),
@@ -111,6 +86,43 @@ function packageChecker(options, callback) {
         console.log(chalk.red(error));
         callback(error, output);
     });
+}
+
+/**
+ * checkHashSum check hashsum of <package.json> file to make sure if it was changed
+ * @param  {Object} options
+ * @return {Promise}
+ */
+function checkHashSum(options) {
+    return cacheToFile(options.sumFile, options.path);
+}
+
+/**
+ * packageChecker
+ * @param  {Object} options
+ * @return {Promise}
+ */
+function packageChecker(options, callback) {
+    var callback = (typeof options === 'object' ? callback : options) || function() {},
+        options = objectAssign(SETTINGS, (typeof options === 'object' ? options : callback) || {}),
+        error = null;
+
+    if (typeof callback !== "function") {
+        throw new Error("Invalid argument: callback");
+    }
+
+    return Promise.resolve(options.sumFile ? checkHashSum(options) : null).then(function(isHashsumOk) {
+        if (isHashsumOk) {
+            console.log(chalk.green('The package.json file wasn\'t changed'));
+            callback(null, null);
+        } else {
+            return comparePackages(options, callback);
+        }
+    }).catch(function(error) {
+        console.log(chalk.red(error));
+        callback(error, null);
+    });
+
 }
 
 packageChecker.version = version;
