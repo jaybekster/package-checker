@@ -56,8 +56,8 @@ while (args.length) {
             }
             break;
         case '--hash':
-            settings.cacheFile = args.shift();
-            if (!settings.cacheFile) {
+            settings.hashFile = args.shift();
+            if (!settings.hashFile) {
                 throw new Error('--hash <path> required');
             }
             break;

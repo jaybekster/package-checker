@@ -23,7 +23,7 @@ var SETTINGS = {
     directory: process.cwd(),
     prod: true,
     dev: true,
-    sumFile: false
+    hashFile: process.cwd() + '/hashsum'
 };
 
 var gitHubPublicRe = /^https:\/\/github.com\/([^\/])+\/([^\/]+\.git)#([0-9]+\.[0-9]+\.[0-9]+)$/;
@@ -94,7 +94,7 @@ function comparePackages(options, callback) {
  * @return {Promise}
  */
 function checkHashSum(options) {
-    return cacheToFile(options.sumFile, options.path);
+    return cacheToFile(options.hashFile, options.path);
 }
 
 /**
@@ -111,7 +111,7 @@ function packageChecker(options, callback) {
         throw new Error("Invalid argument: callback");
     }
 
-    return Promise.resolve(options.sumFile ? checkHashSum(options) : null).then(function(isHashsumOk) {
+    return Promise.resolve(options.hashFile ? checkHashSum(options) : null).then(function(isHashsumOk) {
         if (isHashsumOk) {
             console.log(chalk.green('The package.json file wasn\'t changed'));
             callback(null, null);
