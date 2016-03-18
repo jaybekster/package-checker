@@ -1,6 +1,6 @@
 {
   "name": "package-checker",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "Library to compare currently installed versions of packages with package.json file",
   "main": "index.js",
   "scripts": {},

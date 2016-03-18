@@ -113,6 +113,7 @@ function packageChecker(options, callback) {
     }).then(function(response) {
         if (response.success) {
             console.log(chalk.green('No differences werre found'));
+            callback(null, response);
         } else {
             if (response.text) {
                 console.log(response.text);
@@ -124,6 +125,7 @@ function packageChecker(options, callback) {
         }
     }).catch(function(err) {
         console.log(chalk.red(err));
+        callback(null, response);
     });
 }
 
