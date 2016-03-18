@@ -5,7 +5,7 @@ var semver = require('semver'),
     textTable = require('text-table'),
     chalk = require('chalk'),
     version = require('./package.json').version,
-    cacheToFile = require('./lib/cache-to-file.js'),
+    CacheToFile = require('./lib/cache-to-file.js'),
     readPackageJson = require('./lib/read-package-json'),
     getCurrentNpmLs = require('./lib/get-current-npm-ls');
 
@@ -29,14 +29,13 @@ var SETTINGS = {
 var gitHubPublicRe = /^https:\/\/github.com\/([^\/])+\/([^\/]+\.git)#([0-9]+\.[0-9]+\.[0-9]+)$/;
 
 /**
- * comparePackages compare data from <npm -ls> command and <package.json>
+ * comparePackages compare data from <npm ls> command and <package.json>
  * @param  {Object} options
  * @param  {Function} callback
  * @return {Promise}
  */
-function comparePackages(options, callback) {
+function comparePackages(options) {
     var output = {};
-
     return Promise.all([
         readPackageJson(options),
         getCurrentNpmLs(options),
@@ -73,28 +72,12 @@ function comparePackages(options, callback) {
                 tableBody.push([packageName, packageVersion, packageJsonVersion, 'invalid version']);
             }
         }
-        if (tableBody.length) {
-            console.log(
-                textTable([].concat(textTableObj.header, tableBody), textTableObj.options)
-            );
-            throw new Error('Differences were found');
-        } else {
-            console.log(chalk.green('No differences were found'));
-            callback(null, output);
-        }
-    }).catch(function(error) {
-        console.log(chalk.red(error));
-        callback(error, output);
-    });
-}
-
-/**
- * checkHashSum check hashsum of <package.json> file to make sure if it was changed
- * @param  {Object} options
- * @return {Promise}
- */
-function checkHashSum(options) {
-    return cacheToFile(options.hashFile, options.path);
+        return {
+            success: !tableBody.length,
+            output: output,
+            text: textTable([].concat(textTableObj.header, tableBody), textTableObj.options)
+        };
+    })
 }
 
 /**
@@ -104,25 +87,44 @@ function checkHashSum(options) {
  */
 function packageChecker(options, callback) {
     var callback = (typeof options === 'object' ? callback : options) || function() {},
-        options = objectAssign(SETTINGS, (typeof options === 'object' ? options : callback) || {}),
-        error = null;
+        options = objectAssign(SETTINGS, (typeof options === 'object' ? options : callback) || {});
 
-    if (typeof callback !== "function") {
-        throw new Error("Invalid argument: callback");
+    if (typeof callback !== 'function') {
+        throw new Error('Invalid argument: callback');
     }
 
-    return Promise.resolve(options.hashFile ? checkHashSum(options) : null).then(function(isHashsumOk) {
-        if (isHashsumOk) {
-            console.log(chalk.green('The package.json file wasn\'t changed'));
-            callback(null, null);
-        } else {
-            return comparePackages(options, callback);
+    Promise.resolve(
+        options.hashFile ? CacheToFile.checkHash(options.hashFile, options.path) : {
+            success: false
+    }).then(function(response) {
+        if (!response.success) {
+            return comparePackages(options).then(function(compareResponse) {
+                return objectAssign(response, compareResponse);
+            });
         }
-    }).catch(function(error) {
-        console.log(chalk.red(error));
-        callback(error, null);
+        return response;
+    }).then(function(response) {
+        if (options.hashFile && response.success) {
+            return response.cacheToFile.saveNewHash().then(function() {
+                return response;
+            });
+        }
+        return response;
+    }).then(function(response) {
+        if (response.success) {
+            console.log(chalk.green('No differences werre found'));
+        } else {
+            if (response.text) {
+                console.log(response.text);
+            }
+            if (options.hashFile) {
+                response.cacheToFile.removeNewHash();
+            }
+            throw new Error('Differences were found');
+        }
+    }).catch(function(err) {
+        console.log(chalk.red(err));
     });
-
 }
 
 packageChecker.version = version;
