@@ -31,7 +31,6 @@ var gitHubPublicRe = /^https:\/\/github.com\/([^\/])+\/([^\/]+\.git)#([0-9]+\.[0
 /**
  * comparePackages compare data from <npm ls> command and <package.json>
  * @param  {Object} options
- * @param  {Function} callback
  * @return {Promise}
  */
 function comparePackages(options) {
@@ -81,8 +80,9 @@ function comparePackages(options) {
 }
 
 /**
- * packageChecker
+ * packageChecker itself
  * @param  {Object} options
+ * @param  {Function} callback
  * @return {Promise}
  */
 function packageChecker(options, callback) {
@@ -112,7 +112,7 @@ function packageChecker(options, callback) {
         return response;
     }).then(function(response) {
         if (response.success) {
-            console.log(chalk.green('No differences werre found'));
+            console.log(chalk.green('No differences were found'));
             callback(null, response);
         } else {
             if (response.text) {
