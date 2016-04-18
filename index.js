@@ -37,7 +37,7 @@ function comparePackages(options) {
     var output = {};
     return Promise.all([
         readPackageJson(options),
-        getCurrentNpmLs(options),
+        getCurrentNpmLs(options)
     ]).then(function(values) {
         var packageName,
             currentPackages = values[1],
@@ -51,12 +51,16 @@ function comparePackages(options) {
             output[packageName].actualVersion = actualPackages[packageName];
 
             if (!currentPackages[packageName] || currentPackages[packageName].missing) {
-                tableBody.push([packageName, '', actualPackages[packageName], 'is missing'])
+                tableBody.push([packageName, '', actualPackages[packageName], 'is missing']);
                 continue;
             }
 
             packageJsonVersion = actualPackages[packageName];
-            packageVersion = currentPackages[packageName].version;
+            if (currentPackages[packageName].version) {
+                packageVersion = currentPackages[packageName].version;
+            } else if (currentPackages[packageName].required && currentPackages[packageName].required.version) {
+                packageVersion = currentPackages[packageName].required.version;
+            }
 
             if (gitHubPublicRe.test(packageJsonVersion)) { // if public github url
                 packageJsonVersion = packageJsonVersion.match(gitHubPublicRe)[3];
@@ -76,14 +80,13 @@ function comparePackages(options) {
             output: output,
             text: textTable([].concat(textTableObj.header, tableBody), textTableObj.options)
         };
-    })
+    });
 }
 
 /**
  * packageChecker itself
  * @param  {Object} options
  * @param  {Function} callback
- * @return {Promise}
  */
 function packageChecker(options, callback) {
     var callback = (typeof options === 'object' ? callback : options) || function() {},
@@ -96,7 +99,8 @@ function packageChecker(options, callback) {
     Promise.resolve(
         options.hashFile ? CacheToFile.checkHash(options.hashFile, options.path) : {
             success: false
-    }).then(function(response) {
+        }
+    ).then(function(response) {
         if (!response.success) {
             return comparePackages(options).then(function(compareResponse) {
                 return objectAssign(response, compareResponse);
