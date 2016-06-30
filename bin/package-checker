@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-var packageChecker = require('../index'),
+var PackageChecker = require('../index'),
     settings = {},
     args = process.argv.slice(2),
     help = [
@@ -74,4 +74,4 @@ while (args.length) {
     }
 }
 
-packageChecker(settings);
+new PackageChecker(settings).check();
