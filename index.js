@@ -1,22 +1,12 @@
 'use strict';
 
-var semver = require('semver'),
-    objectAssign = require('object-assign'),
-    textTable = require('text-table'),
+var objectAssign = require('object-assign'),
     chalk = require('chalk'),
     version = require('./package.json').version,
     CacheToFile = require('./lib/cache-to-file.js'),
     readPackageJson = require('./lib/read-package-json'),
+    comparePackages = require('./lib/compare-packages'),
     getCurrentNpmLs = require('./lib/get-current-npm-ls');
-
-var textTableObj = {
-    header: [
-        ['Name', 'Current', 'Wanted', 'Problem']
-    ],
-    options: {
-        align: ['l', 'l', 'l', 'l']
-    }
-};
 
 var SETTINGS = {
     path: process.cwd() + '/package.json',
@@ -26,65 +16,7 @@ var SETTINGS = {
     hashFile: false
 };
 
-var gitHubPublicRe = /^https:\/\/github.com\/([^\/])+\/([^\/]+\.git)#([0-9]+\.[0-9]+\.[0-9]+)$/;
-
 /**
- * comparePackages compare data from <npm ls> command and <package.json>
- * @param  {Object} options
- * @return {Promise}
- */
-function comparePackages(options) {
-    var output = {};
-    return Promise.all([
-        readPackageJson(options),
-        getCurrentNpmLs(options)
-    ]).then(function(values) {
-        var packageName,
-            currentPackages = values[1],
-            actualPackages = values[0],
-            packageVersion,
-            tableBody = [],
-            packageJsonVersion;
-
-        for (packageName in actualPackages) {
-            output[packageName] = {};
-            output[packageName].actualVersion = actualPackages[packageName];
-
-            if (!currentPackages[packageName] || currentPackages[packageName].missing) {
-                tableBody.push([packageName, '', actualPackages[packageName], 'is missing']);
-                continue;
-            }
-
-            packageJsonVersion = actualPackages[packageName];
-            if (currentPackages[packageName].version) {
-                packageVersion = currentPackages[packageName].version;
-            } else if (currentPackages[packageName].required && currentPackages[packageName].required.version) {
-                packageVersion = currentPackages[packageName].required.version;
-            }
-
-            if (gitHubPublicRe.test(packageJsonVersion)) { // if public github url
-                packageJsonVersion = packageJsonVersion.match(gitHubPublicRe)[3];
-            }
-
-            if (semver.validRange(packageJsonVersion)
-                && packageVersion !== packageJsonVersion
-                && !semver.satisfies(packageVersion, packageJsonVersion)
-            ) {
-                output[packageName].actualVersion = packageJsonVersion;
-                output[packageName].relevantVersion = packageVersion;
-                tableBody.push([packageName, packageVersion, packageJsonVersion, 'invalid version']);
-            }
-        }
-        return {
-            success: !tableBody.length,
-            output: output,
-            text: textTable([].concat(textTableObj.header, tableBody), textTableObj.options)
-        };
-    });
-}
-
-/**
- * packageChecker itself
  * @param  {Object} options
  * @param  {Function} callback
  */
@@ -102,7 +34,15 @@ function packageChecker(options, callback) {
         }
     ).then(function(response) {
         if (!response.success) {
-            return comparePackages(options).then(function(compareResponse) {
+            return Promise.all([
+                readPackageJson(options),
+                getCurrentNpmLs(options)
+            ]).then(function(values) {
+                return comparePackages({
+                    currentPackages: values[1],
+                    actualPackages: values[0]
+                });
+            }).then(function(compareResponse) {
                 return objectAssign(response, compareResponse);
             });
         }
@@ -127,6 +67,7 @@ function packageChecker(options, callback) {
             }
             throw new Error('Differences were found');
         }
+        return response;
     }).catch(function(err) {
         console.log(chalk.red(err));
         callback(null, response);
