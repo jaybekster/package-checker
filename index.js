@@ -2,11 +2,12 @@
 
 var objectAssign = require('object-assign'),
     chalk = require('chalk'),
+    Spinner = require('cli-spinner').Spinner,
     version = require('./package.json').version,
     CacheToFile = require('./lib/cache-to-file.js'),
-    readPackageJson = require('./lib/read-package-json'),
-    comparePackages = require('./lib/compare-packages'),
-    getCurrentNpmLs = require('./lib/get-current-npm-ls');
+    readPackageJson = require('./lib/read-package-json.js'),
+    comparePackages = require('./lib/compare-packages.js'),
+    getCurrentNpmLs = require('./lib/get-current-npm-ls.js');
 
 var SETTINGS = {
     path: process.cwd() + '/package.json',
@@ -27,6 +28,10 @@ function packageChecker(options, callback) {
     if (typeof callback !== 'function') {
         throw new Error('Invalid argument: callback');
     }
+
+    var spinner = new Spinner('Calculating... %s');
+    spinner.setSpinnerString('|/-\\');
+    spinner.start();
 
     Promise.resolve(
         options.hashFile ? CacheToFile.checkHash(options.hashFile, options.path) : {
@@ -55,6 +60,7 @@ function packageChecker(options, callback) {
         }
         return response;
     }).then(function(response) {
+        spinner.stop(true);
         if (response.success) {
             console.log(chalk.green('No differences were found'));
             callback(null, response);
@@ -69,6 +75,7 @@ function packageChecker(options, callback) {
         }
         return response;
     }).catch(function(err) {
+        spinner.stop(true)
         console.log(chalk.red(err));
         callback(null, response);
     });
